@@ -11,6 +11,9 @@ class FactoryData:
     def __init__(self,log:str,state:MachineState):
         self.log = log
         self.state = state
+        
+    def __str__(self) -> str:
+        return self.log
     
 class FactoryDataCollector:
     def __init__(self,needed_machines:int, idle_machines:int):
@@ -35,3 +38,8 @@ class FactoryDataCollector:
     
     def get_idle_machines(self):
         return self.__idle_machines
+    
+    def __str__(self) -> str:
+        
+        logs = "\n".join([str(log) for log in self.__logs])
+        return f"Logs:\n{logs}\nWorking time: {self.__working_time}\nNeeded machines: {self.__needed_machines}\nIdle machines: {self.__idle_machines}"
