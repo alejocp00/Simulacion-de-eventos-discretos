@@ -7,6 +7,9 @@ from queue import Queue
 from src.code.machines import Machine
 from src.code.auxiliar_functions import get_repair_time
 
+# Todo: cambiar a que el heap sólo reciba máquinas
+# Todo: Guardar la data
+
 class Factory:
     def __init__(self, n:int, s:int):
         self.n = n
@@ -14,12 +17,16 @@ class Factory:
         self.__populate_factory()
         self.__broken_machines = Queue()
         self.__crashed = False
+        self.__start_time = 0
+        self.__working_time = 0
         
     def start_factory(self):
         self.__repair_thread = Thread(target=self.__repair_machine)
         self.__repair_thread.start()
         
         self.__run_all_machines()
+        
+        self.__start_time = time.time()
         
         self.__check_machines_state()
         
@@ -73,3 +80,9 @@ class Factory:
         print("The factory has crashed")
         self.__crashed = True
         self.__repair_thread.join()
+        self.__working_time = time.time() - self.__start_time
+        
+    def get_factory_time(self):
+        if self.__crashed:
+            return self.__working_time
+        return time.time() - self.__start_time
