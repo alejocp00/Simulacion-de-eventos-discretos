@@ -26,3 +26,9 @@ class Simulator:
             
     def get_results(self):
         return self.__results
+    
+    def show_results(self):
+        for (factory_time,factory_data) in self.__results:
+            print(f"Factory ran for {factory_time} seconds")
+            print(factory_data)
+            print("\n")
