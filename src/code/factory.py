@@ -40,7 +40,7 @@ class Factory:
             
             
     def __populate_factory(self):
-        self.__working_machines = []
+        self.__working_machines : list[tuple[float,Machine]] = []  
         self.__idle_machines = Queue()
         for i in range(self.s):
             machine = Machine(self.n+i)
@@ -55,18 +55,20 @@ class Factory:
     def __repair_machine(self):
         while not self.__crashed:
             if not self.__broken_machines.empty():
-                self.__data_collector.add_log(FactoryData(f"Machine {machine.get_id()} started repairing",MachineState.REPAIRING))
                 machine = self.__broken_machines.get()
-                time.sleep(get_repair_time())
+                self.__data_collector.add_log(FactoryData(f"Machine {machine.get_id()} started repairing",MachineState.REPAIRING))
+                repair_time=get_repair_time()
+                time.sleep(repair_time)
                 self.__idle_machines.put(machine)
-                self.__data_collector.add_log(FactoryData(f"Machine {machine.get_id()} finished repairing",MachineState.IDLE))
+                self.__data_collector.add_log(FactoryData(f"Machine {machine.get_id()} finished repairing: {repair_time}",MachineState.IDLE))
                 
     def __check_machines_state(self):
         _,machine = heapq.heappop(self.__working_machines)
         while True:
             if machine.get_start_time() + machine.get_work_time() < time.time():
                 
-                self.__data_collector.add_log(FactoryData(f"Machine {machine.get_id()} broke",MachineState.BROKEN))
+                self.__data_collector.add_log(FactoryData(f"Machine {machine.get_id()} broke: {machine.get_work_time()}",MachineState.BROKEN))
+                self.__broken_machines.put(machine)
                 
                 # Check if there are available machines to replace the broken one
                 if self.__idle_machines.empty():
