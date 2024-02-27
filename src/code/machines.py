@@ -2,9 +2,9 @@ import time
 from src.code.auxiliar_functions import  get_working_time
 
 class Machine:
-    def __init__(self,id,work_time=get_working_time()):
+    def __init__(self,id,work_time=0):
         self.__id = id
-        self.__work_time = work_time
+        self.__work_time = work_time if not work_time == 0 else get_working_time()
         self.__start_time = 0
         
     def get_id(self):
