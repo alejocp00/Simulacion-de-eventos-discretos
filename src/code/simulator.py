@@ -2,6 +2,8 @@ import random
 
 from src.code.factory import Factory
 
+# Todo: sacar el data collector a una clase
+# Todo: Manejar la data
 
 class Simulator:
     def __init__(self,i:int =0,n:int =0,s:int =0,random_values:bool = True):
@@ -14,7 +16,8 @@ class Simulator:
         if self.__random_values:
             self.__n = random.randint(10,50)
             self.__s = random.randint(10,50)
-            self.__iterations = random.randint(1000,10000)
+            # self.__iterations = random.randint(1000,10000)
+            self.__iterations = 10
             
     def run(self):
         for i in range(self.__iterations):
