@@ -1,13 +1,10 @@
-from src.code.factory import Factory
-import time
+from src.code.simulator import Simulator
 
 def main():
-    n = 10
-    s = 10
-    factory = Factory(n,s)
-    start = time.time()
-    factory.start_factory()
-    end = time.time()
-    print(f"Factory ran for {end-start} seconds")
+    simulator = Simulator(n=10,s=10,i=10,random_values=False)
+    simulator.run()
+    simulator.show_results()
     
 main()
+
+# Todo: Permitir correr el programa con argumentos
