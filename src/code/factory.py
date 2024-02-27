@@ -1,10 +1,10 @@
-from enum import Enum
 import heapq
 from platform import machine
 from threading import Thread
 import time
 from queue import Queue
 
+from src.code.factory_data_collector import FactoryData, FactoryDataCollector, MachineState
 from src.code.machines import Machine
 from src.code.auxiliar_functions import get_repair_time
 
@@ -89,44 +89,12 @@ class Factory:
         self.__crashed = True
         self.__repair_thread.join()
         self.__working_time = time.time() - self.__start_time
+        self.__data_collector.add_working_time(self.get_factory_time())
         
     def get_factory_time(self):
         if self.__crashed:
             return self.__working_time
         return time.time() - self.__start_time
-
-
-
-class MachineState(Enum):
-    WORKING = "Working"
-    BROKEN = "Broken"
-    IDLE = "Idle"
-    REPAIRING = "Repairing"
-class FactoryData:
-    def __init__(self,log:str,state:MachineState):
-        self.log = log
-        self.state = state
     
-class FactoryDataCollector:
-    def __init__(self,needed_machines:int, idle_machines:int):
-        self.__logs = []
-        self.__needed_machines = needed_machines
-        self.__idle_machines = idle_machines
-        
-    def add_log(self,data:FactoryData):
-        self.__logs.append(data)
-        
-    def add_working_time(self,working_time:float):
-        self.__working_time = working_time
-    
-    def get_logs(self):
-        return self.__logs
-    
-    def get_working_time(self):
-        return self.__working_time
-    
-    def get_needed_machines(self):
-        return self.__needed_machines
-    
-    def get_idle_machines(self):
-        return self.__idle_machines
+    def get_data(self):
+        return self.__data_collector
