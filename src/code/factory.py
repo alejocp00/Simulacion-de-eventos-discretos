@@ -6,7 +6,6 @@ from queue import Queue
 
 from src.code.factory_data_collector import FactoryData, FactoryDataCollector, MachineState
 from src.code.machines import Machine
-from src.code.auxiliar_functions import get_repair_time
 
 
 class Factory:

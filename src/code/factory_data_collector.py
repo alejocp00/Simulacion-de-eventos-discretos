@@ -44,7 +44,7 @@ class FactoryData:
     
 class FactoryDataCollector:
     def __init__(self,needed_machines:int, idle_machines:int):
-        self.__logs = []
+        self.__logs :list[FactoryData] = []
         self.__needed_machines = needed_machines
         self.__idle_machines = idle_machines
         
