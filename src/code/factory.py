@@ -28,14 +28,14 @@ class Factory:
         
         self.__start_time = time.time()
         
-        self.__check_machines_state()
+        self.__perform_work_routine()
         
         self.__factory_crashed()
 
     def __run_all_machines(self):
         for machine in self.__working_machines:
             machine.start_working()
-            self.__data_collector.add_log(FactoryData(f"Machine {machine.get_id()} started working",MachineState.WORKING))
+            self.__data_collector.add_log(FactoryData(machine,MachineState.WORKING))
             
             
     def __populate_factory(self):
@@ -53,40 +53,59 @@ class Factory:
             
     def __repair_machine(self):
         while not self.__crashed:
+            # Check if there are broken machines to repair
             if not self.__broken_machines.empty():
-                machine = self.__broken_machines.get()
-                self.__data_collector.add_log(FactoryData(f"Machine {machine.get_id()} started repairing",MachineState.REPAIRING))
-                repair_time=get_repair_time()
-                time.sleep(repair_time)
-                self.__idle_machines.put(machine)
-                self.__data_collector.add_log(FactoryData(f"Machine {machine.get_id()} finished repairing: {repair_time}",MachineState.IDLE))
                 
-    def __check_machines_state(self):
+                # Get the broken machine and repair it
+                machine = self.__broken_machines.get()
+                
+                # Update the logs
+                self.__data_collector.add_log(FactoryData(machine,MachineState.REPAIRING))
+                
+                # Simulate the repair time
+                repair_time = machine.get_repair_time()
+                time.sleep(repair_time)
+                if self.__crashed:
+                    break
+                machine.repair()
+                
+                # Put the machine to idle state and update logs
+                self.__idle_machines.put(machine)
+                self.__data_collector.add_log(FactoryData(machine,MachineState.IDLE))
+                
+    def __perform_work_routine(self):
         machine = heapq.heappop(self.__working_machines)
+        
         while True:
+            
+            # Check if the machine is broken
             if machine.get_start_time() + machine.get_work_time() < time.time():
                 
-                self.__data_collector.add_log(FactoryData(f"Machine {machine.get_id()} broke: {machine.get_work_time()}",MachineState.BROKEN))
+                # Update logs
+                self.__data_collector.add_log(FactoryData(machine,MachineState.BROKEN))
+                
+                # Put the machine to broken state
                 self.__broken_machines.put(machine)
                 
                 # Check if there are available machines to replace the broken one
                 if self.__idle_machines.empty():
                     break
                 
-                self.__swap_machine(machine)
+                # Replace the broken machine
+                self.__remplace_machine()
                 
+                # Get the next machine
                 machine = heapq.heappop(self.__working_machines)
             
                 
-    def __swap_machine(self, machine):
+    def __remplace_machine(self):
         new_machine = self.__idle_machines.get()
         new_machine.start_working()
-        self.__data_collector.add_log(FactoryData(f"Machine {new_machine.get_id()} started working",MachineState.WORKING))
+        self.__data_collector.add_log(FactoryData(new_machine,MachineState.WORKING))
         heapq.heappush(self.__working_machines, new_machine)
 
         
     def __factory_crashed(self):
-        print("The factory has crashed")
         self.__crashed = True
         self.__repair_thread.join()
         self.__working_time = time.time() - self.__start_time
