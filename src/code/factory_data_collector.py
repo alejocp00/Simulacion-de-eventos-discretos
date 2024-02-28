@@ -1,4 +1,7 @@
 from enum import Enum
+import re
+
+from src.code.machines import Machine
 
 
 class MachineState(Enum):
@@ -8,12 +11,34 @@ class MachineState(Enum):
     REPAIRING = "Repairing"
     
 class FactoryData:
-    def __init__(self,log:str,state:MachineState):
-        self.log = log
-        self.state = state
+    def __init__(self,machine:Machine,state:MachineState):
+        self.__machine = machine
+        self.__state = state
+        
+        
+    def get_machine_id(self):
+        return self.__machine.get_id()
+    
+    def get_state(self):
+        return self.__state
+    
+    def get_machine_work_time(self):
+        return self.__machine.get_work_time()
+    
+    def get_machine_repair_time(self):
+        return self.__machine.get_repair_time()
+    
         
     def __str__(self) -> str:
-        return self.log
+        if self.__state == MachineState.WORKING:
+            return f"Machine {self.__machine.get_id()} start working"
+        if self.__state == MachineState.BROKEN:
+            return f"Machine {self.__machine.get_id()} broke. Work for {self.__machine.get_work_time()} seconds"
+        if self.__state == MachineState.IDLE:
+            return f"Machine {self.__machine.get_id()} already repaired. Repair time: {self.get_machine_repair_time()} seconds"
+        if self.__state == MachineState.REPAIRING:
+            return f"Machine {self.__machine.get_id()} is repairing"
+        return "Wrong log format"
     
 class FactoryDataCollector:
     def __init__(self,needed_machines:int, idle_machines:int):
