@@ -12,32 +12,35 @@ class MachineState(Enum):
     
 class FactoryData:
     def __init__(self,machine:Machine,state:MachineState):
-        self.__machine = machine
+        self.__machine_work_time = machine.get_work_time()
+        self.__machine_repair_time = machine.get_repair_time()
+        self.__machine_id = machine.get_id()
+        
         self.__state = state
         
         
     def get_machine_id(self):
-        return self.__machine.get_id()
+        return self.__machine_id
     
     def get_state(self):
         return self.__state
     
     def get_machine_work_time(self):
-        return self.__machine.get_work_time()
+        return self.__machine_work_time
     
     def get_machine_repair_time(self):
-        return self.__machine.get_repair_time()
+        return self.__machine_repair_time
     
         
     def __str__(self) -> str:
         if self.__state == MachineState.WORKING:
-            return f"Machine {self.__machine.get_id()} start working"
+            return f"Machine {self.__machine_id} start working"
         if self.__state == MachineState.BROKEN:
-            return f"Machine {self.__machine.get_id()} broke. Work for {self.__machine.get_work_time()} seconds"
+            return f"Machine {self.__machine_id} broke. Work for {self.__machine_work_time} seconds"
         if self.__state == MachineState.IDLE:
-            return f"Machine {self.__machine.get_id()} already repaired. Repair time: {self.get_machine_repair_time()} seconds"
+            return f"Machine {self.__machine_id} already repaired. Repair time: {self.__machine_repair_time} seconds"
         if self.__state == MachineState.REPAIRING:
-            return f"Machine {self.__machine.get_id()} is repairing"
+            return f"Machine {self.__machine_id} is repairing"
         return "Wrong log format"
     
 class FactoryDataCollector:
