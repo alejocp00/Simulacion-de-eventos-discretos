@@ -1,11 +1,11 @@
-from src.code.simulator import Simulator
+from src.gui.gui import FactoryGUI
 
 def main():
-    simulator = Simulator()
-    simulator.run()
-    simulator.show_results()
+    gui = FactoryGUI()
+    gui.run()
     
-main()
+if __name__ == "__main__":
+    main()
 
 
 
