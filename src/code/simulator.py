@@ -53,8 +53,15 @@ class Simulator:
     def get_results(self):
         return self.__results
 
-    def show_results(self):
+    def get_results_as_text(self):
+        result= ""
         for factory_data in self.__results:
-            print(f"Factory ran for {factory_data.get_working_time()} seconds")
-            print(factory_data.get_logs())
-            print("\n")
+            result +=f"Factory ran for {factory_data.get_working_time()} seconds"
+            result += "\n"
+            for log in factory_data.get_logs():
+                result += "\t"
+                result += str(log)
+                result += "\n"
+            result += "\n"
+            
+        return result
