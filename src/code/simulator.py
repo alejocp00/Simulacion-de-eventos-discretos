@@ -2,6 +2,7 @@ import random
 from src.code.factory_data_collector import FactoryDataCollector
 from src.code.factory import Factory
 import src.code.auxiliar_functions as aux
+import numpy as np
 
 # Todo: sacar el data collector a una clase
 # Todo: Manejar la data
@@ -64,4 +65,9 @@ class Simulator:
                 result += "\n"
             result += "\n"
             
+        result += f"Mean working time for given parameters: {self.get_mean_working_time()}"
+            
         return result
+
+    def get_mean_working_time(self):
+        return np.mean([factory_data.get_working_time() for factory_data in self.__results])
