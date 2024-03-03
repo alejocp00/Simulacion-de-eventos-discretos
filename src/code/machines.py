@@ -12,13 +12,13 @@ class Machine:
         return self.__id
     
     def get_work_time(self) -> float:
-        return self.__work_time
+        return abs(self.__work_time)
     
     def get_repair_time(self) -> float:
-        return self.__repair_time
+        return abs(self.__repair_time)
     
     def get_start_time(self) -> float:
-        return self.__start_time
+        return abs(self.__start_time)
     
     def start_working(self):
         self.__start_time = time.time()
