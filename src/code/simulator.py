@@ -30,7 +30,9 @@ class Simulator:
         self.__iterations = iter
         self.__n = n
         self.__s = s
-
+        self.__lambd = lambd
+        self.__mu = mu
+        self.__sigma = sigma
         aux.var_lambd = lambd
         aux.var_mu = mu
         aux.var_sigma = sigma
@@ -68,6 +70,24 @@ class Simulator:
         result += f"Mean working time for given parameters: {self.get_mean_working_time()}"
             
         return result
+    
+    def get_iterations(self):
+        return self.__iterations
+    
+    def get_n(self):
+        return self.__n
+    
+    def get_s(self):
+        return self.__s
+    
+    def get_lambd(self):
+        return self.__lambd
+    
+    def get_mu(self):
+        return self.__mu
+    
+    def get_sigma(self):
+        return self.__sigma
 
     def get_mean_working_time(self):
         return np.mean([factory_data.get_working_time() for factory_data in self.__results])
