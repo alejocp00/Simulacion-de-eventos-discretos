@@ -1,3 +1,4 @@
+import datetime
 import tkinter
 
 import src.code.simulator as sim
@@ -7,13 +8,14 @@ class FactoryGUI:
     def __init__(self):
         self.__root = tkinter.Tk()
         self.__root.title("Factory Simulator")
-        self.__root.geometry("500x500")
+        self.__root.geometry("800x800")
+        self.__simulations : list[sim.Simulator] = []
 
         # Create the inputs for the simulation
         self.__create_inputs()
 
-        # Create the button to start the simulation
-        self.__create_start_button()
+        # Create the buttons
+        self.__create_buttons()
 
         # Create the results label
         self.__create_results_label()
@@ -47,7 +49,7 @@ class FactoryGUI:
         self.__s_entry.grid(row=1, column=1)
 
         # Create the Lambda input
-        self.__lambd_label = tkinter.Label(self.__inputs_frame, text="Lambda")
+        self.__lambd_label = tkinter.Label(self.__inputs_frame, text="Lambda (exponential distribution parameter)")
         self.__lambd_label.grid(row=2, column=0)
         self.__lambd_entry = tkinter.Entry(
             self.__inputs_frame,
@@ -58,7 +60,7 @@ class FactoryGUI:
         self.__lambd_entry.grid(row=2, column=1)
 
         # Create the Mu input
-        self.__mu_label = tkinter.Label(self.__inputs_frame, text="Mu")
+        self.__mu_label = tkinter.Label(self.__inputs_frame, text="Mu (normal distribution mean)")
         self.__mu_label.grid(row=3, column=0)
         self.__mu_entry = tkinter.Entry(
             self.__inputs_frame,
@@ -69,7 +71,7 @@ class FactoryGUI:
         self.__mu_entry.grid(row=3, column=1)
 
         # Create the Sigma input
-        self.__sigma_label = tkinter.Label(self.__inputs_frame, text="Sigma")
+        self.__sigma_label = tkinter.Label(self.__inputs_frame, text="Sigma (normal distribution standard deviation)")
         self.__sigma_label.grid(row=4, column=0)
         self.__sigma_entry = tkinter.Entry(
             self.__inputs_frame,
@@ -98,25 +100,70 @@ class FactoryGUI:
 
         self.__random_values_checkbox.grid(row=6, column=0)
 
-    def __create_start_button(self):
+    def __create_buttons(self):
+        # Create the buttons frame
+        self.__buttons_frame = tkinter.Frame(self.__root)
+        self.__buttons_frame.pack()
+        
+        # Create the start button
         self.__start_button = tkinter.Button(
-            self.__root, text="Start Simulation", command=self.__start_simulation
+            self.__buttons_frame, text="Start Simulation", command=self.__start_simulation
         )
         self.__start_button.pack()
+        
+        # Create the export button
+        self.__export_button = tkinter.Button(
+            self.__buttons_frame, text="Export Results", command=self.__export_results
+        )
+        self.__export_button.pack()
+        
+    def __export_results(self):
+        """Export the results to a file called results.date.md
+        """
+        
+        text = "# Factory Simulator Results\n\n"
+        text += "| N | S | Lambda | Mu | Sigma | Iterations | E[T] |\n"
+        text += "|:-:|:-:|:------:|:--:|:-----:|:----------:|:----:|\n"
+        
+        
+        for simulation in self.__simulations:
+            n = simulation.get_n()
+            s = simulation.get_s()
+            lambd = simulation.get_lambd()
+            mu = simulation.get_mu()
+            sigma = simulation.get_sigma()
+            iterations = simulation.get_iterations()
+            et = simulation.get_mean_working_time()
+
+            text += f"| {n} | {s} | {lambd} | {mu} | {sigma} | {iterations} | {et} |\n"
+            
+        with open(f"results.{datetime.datetime.now().isoformat()}.md", "w") as file:
+            file.write(text)
+            
+        self.__update_results_label("Results exported to results.date.md")
 
     def __create_results_label(self):
         # Its need to be scrollable
-        self.__scrollbar = tkinter.Scrollbar(self.__root, orient="vertical")
-        self.__results_text = tkinter.Text(
-            self.__root, yscrollcommand=self.__scrollbar.set
-        )
-        self.__scrollbar.config(command=self.__results_text.yview)
+        
+        # Create the frame for the results
+        self.__results_frame = tkinter.Frame(self.__root)
+        self.__results_frame.pack(fill="both", expand=True)
+        
+        # The scroll bar and the text must be side by side
+        self.__scroll_bar = tkinter.Scrollbar(self.__results_frame)
+        self.__scroll_bar.pack(side="right", fill="y")
+        
+        self.__results_text = tkinter.Text(self.__results_frame, yscrollcommand=self.__scroll_bar.set)
+        self.__results_text.pack(fill="both", expand=True)
+        
+        self.__scroll_bar.config(command=self.__results_text.yview)
+        
         self.__results_text.config(state="disabled")
-        self.__results_text.pack()
-        self.__scrollbar.pack(side="right", fill="y")
+        
+        
 
     def __start_simulation(self):
-        self.__update_results_label("Starting simulation", False)
+        self.__update_results_label("Starting simulation")
         n = int(self.__n_entry.get())
         s = int(self.__s_entry.get())
         lambd = float(self.__lambd_entry.get())
@@ -136,7 +183,7 @@ class FactoryGUI:
 
         self.__simulator.run()
 
-        self.__results = self.__simulator.get_results()
+        self.__simulations.append(self.__simulator)
 
         self.__update_results_label(
             f"Results:\n{self.__simulator.get_results_as_text()}"
@@ -148,11 +195,8 @@ class FactoryGUI:
         ) or P == ""
 
     def __update_results_label(self, text, save_old_text: bool = True):
-        old_text = ""
-        if save_old_text:
-            old_text = self.__results_text.get("1.0", "end")
         self.__results_text.config(state="normal")
-        self.__results_text.insert("end", old_text + "\n" + text)
+        self.__results_text.insert("end", text + "\n\n")
         self.__results_text.config(state="disabled")
 
     def run(self):
