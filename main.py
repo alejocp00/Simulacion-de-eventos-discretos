@@ -6,9 +6,3 @@ def main():
     
 if __name__ == "__main__":
     main()
-
-
-
-
-
-# Todo: Permitir correr el programa con argumentos

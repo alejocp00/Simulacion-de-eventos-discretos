@@ -4,8 +4,6 @@ from src.code.factory import Factory
 import src.code.auxiliar_functions as aux
 import numpy as np
 
-# Todo: sacar el data collector a una clase
-# Todo: Manejar la data
 
 ITERATIONS = 100
 N = 10
