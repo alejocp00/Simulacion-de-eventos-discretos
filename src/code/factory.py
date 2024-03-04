@@ -4,7 +4,7 @@ from threading import Thread
 import time
 from queue import Queue
 
-from src.code.factory_data_collector import FactoryData, FactoryDataCollector, MachineState
+from src.code.factory_data_collector import MachineData, FactoryDataCollector, MachineState
 from src.code.machines import Machine
 
 
@@ -34,7 +34,7 @@ class Factory:
     def __run_all_machines(self):
         for machine in self.__working_machines:
             machine.start_working()
-            self.__data_collector.add_log(FactoryData(machine,MachineState.WORKING))
+            self.__data_collector.add_log(MachineData(machine,MachineState.WORKING))
             
             
     def __populate_factory(self):
@@ -59,7 +59,7 @@ class Factory:
                 machine = self.__broken_machines.get()
                 
                 # Update the logs
-                self.__data_collector.add_log(FactoryData(machine,MachineState.REPAIRING))
+                self.__data_collector.add_log(MachineData(machine,MachineState.REPAIRING))
                 
                 # Simulate the repair time
                 repair_time = machine.get_repair_time()
@@ -70,7 +70,7 @@ class Factory:
                 
                 # Put the machine to idle state and update logs
                 self.__idle_machines.put(machine)
-                self.__data_collector.add_log(FactoryData(machine,MachineState.IDLE))
+                self.__data_collector.add_log(MachineData(machine,MachineState.IDLE))
                 
     def __perform_work_routine(self):
         machine = heapq.heappop(self.__working_machines)
@@ -81,7 +81,7 @@ class Factory:
             if machine.get_start_time() + machine.get_work_time() < time.time():
                 
                 # Update logs
-                self.__data_collector.add_log(FactoryData(machine,MachineState.BROKEN))
+                self.__data_collector.add_log(MachineData(machine,MachineState.BROKEN))
                 
                 # Put the machine to broken state
                 self.__broken_machines.put(machine)
@@ -100,7 +100,7 @@ class Factory:
     def __remplace_machine(self):
         new_machine = self.__idle_machines.get()
         new_machine.start_working()
-        self.__data_collector.add_log(FactoryData(new_machine,MachineState.WORKING))
+        self.__data_collector.add_log(MachineData(new_machine,MachineState.WORKING))
         heapq.heappush(self.__working_machines, new_machine)
 
         

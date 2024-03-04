@@ -9,7 +9,7 @@ class MachineState(Enum):
     IDLE = "Idle"
     REPAIRING = "Repairing"
     
-class FactoryData:
+class MachineData:
     def __init__(self,machine:Machine,state:MachineState):
         self.__machine_work_time = machine.get_work_time()
         self.__machine_repair_time = machine.get_repair_time()
@@ -44,11 +44,11 @@ class FactoryData:
     
 class FactoryDataCollector:
     def __init__(self,needed_machines:int, idle_machines:int):
-        self.__logs :list[FactoryData] = []
+        self.__logs :list[MachineData] = []
         self.__needed_machines = needed_machines
         self.__idle_machines = idle_machines
         
-    def add_log(self,data:FactoryData):
+    def add_log(self,data:MachineData):
         self.__logs.append(data)
         
     def add_working_time(self,working_time:float):
