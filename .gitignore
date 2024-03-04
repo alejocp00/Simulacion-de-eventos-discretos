@@ -167,6 +167,4 @@ cython_debug/
 # Built Visual Studio Code Extensions
 *.vsix
 
-report/
-!report/report.tex
-!report/report.pdf
+report/*.md
